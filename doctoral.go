@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/ubombar/doctoral/cmd/doctoral"
-)
+import doctoral "github.com/ubombar/doctoral/pkg"
 
 func main() {
 	doctoral.Execute()

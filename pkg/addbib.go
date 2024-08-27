@@ -1,4 +1,4 @@
-package cmd
+package doctoral
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var addHardCmd = &cobra.Command{
-	Use:     "addhard",
-	Short:   "Add Hard Notes to your Obsidian Vault.",
+var addBibCmd = &cobra.Command{
+	Use:     "addbib",
+	Short:   "Add Bib Notes to your Obsidian Vault.",
 	Version: "v0.1.0",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Not working yet.")
@@ -16,5 +16,5 @@ var addHardCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(addHardCmd)
+	rootCmd.AddCommand(addBibCmd)
 }
