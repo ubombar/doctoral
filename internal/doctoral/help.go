@@ -5,9 +5,10 @@ import "fmt"
 // Output the help message to the screen.
 func DisplayHelp() {
 	msg := `Command is not recognised. Here are the available commands:
-	addbib: Adds a Bib Note to the vault.
-	addhard: Adds a Hard Note to the vaul.
-	`
+	bib: Bib Note related functionality.
+		add: Adds a new Bib Note to the Vault.
+
+for help type: doctoral help`
 
 	fmt.Printf("%v\n", msg)
 }

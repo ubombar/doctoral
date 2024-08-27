@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ubombar/doctoral/internal/doctoral"
+	"github.com/ubombar/doctoral/pkg/bib"
 )
 
 var rootCmd = &cobra.Command{
@@ -26,5 +27,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "enable verbose output")
+	rootCmd.AddCommand(bib.BibCmd)
 }
