@@ -6,7 +6,17 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
+	"time"
 )
+
+type BibNote struct {
+	Date       string
+	Identifier string
+	Tags       []string
+	Status     string
+	Reference  string
+}
 
 // Searches the given file on the search dirs, returns candidates.
 // In the feature I can add an option for recursive search.
@@ -50,7 +60,10 @@ func FindRequestedFile(identifier string, searchDirs []string) []string {
 	return absolutePathCandidates
 }
 
-func TransferFileContent(sourcePath, destPath string, deleteOriginal bool) error {
+func TransferFileContent(sourcePath, destPath string, deleteOriginal, overwrite bool) error {
+	if !overwrite && fileExists(destPath) {
+		return fmt.Errorf("cannot create pdf, file already exists")
+	}
 	inputFile, err := os.Open(sourcePath)
 	if err != nil {
 		return fmt.Errorf("couldn't open source file: %v", err)
@@ -79,12 +92,47 @@ func TransferFileContent(sourcePath, destPath string, deleteOriginal bool) error
 	return nil
 }
 
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return err == nil
+}
+
 // The actual job. This is why we are here.
-func CreateBibTemplate(templateFile, candidatePath, identifier string) error {
+// Check for override
+func CreateBibTemplate(templateFile, bibDir, candidatePath, identifier string, overwrite bool, tags []string, status string) error {
 	// Read the template from the template file
-	// Use go templates to apply the template, the tags etc.
+	tmp, err := template.ParseFiles(templateFile)
+
+	if err != nil {
+		return err
+	}
+
+	bibFilePath := filepath.Join(bibDir, fmt.Sprintf("%s.md", identifier))
+
+	if !overwrite && fileExists(bibFilePath) {
+		return fmt.Errorf("cannot create bib note, file already exists")
+	}
+
 	// Create the bib note in the bib note folder.
-	return nil
+	bibNote, err := os.Create(bibFilePath)
+
+	if err != nil {
+		return err
+	}
+
+	defer bibNote.Close()
+
+	// Use go templates to apply the template, the tags etc.
+	return tmp.Execute(bibNote, BibNote{
+		Date:       time.Now().Format("02-01-2006"),
+		Identifier: identifier,
+		Tags:       tags,
+		Status:     status,
+		Reference:  fmt.Sprintf("[[%s]]", filepath.Base(candidatePath)),
+	})
 }
 
 // Note: Do some sanitization on the filename! like Remove unncessary capitilzation.
@@ -97,5 +145,5 @@ func CalculateDestinationPath(candidatePath, pdfDir string) string {
 
 // Just check if it ends with .pdf
 func IsAPDFFile(path string) bool {
-	return strings.ToLower(filepath.Ext(path)) == "pdf"
+	return strings.Replace(strings.ToLower(filepath.Ext(path)), ".", "", -1) == "pdf"
 }

@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	DOCTORAL_SEARCH_DIRS = "DOCTORAL_SEARCH_DIRS"
-	DOCTORAL_PDF_DIR     = "DOCTORAL_PDF_DIR"
-	DOCTORAL_BIB_DIR     = "DOCTORAL_BIB_DIR"
+	DOCTORAL_SEARCH_DIRS   = "DOCTORAL_SEARCH_DIRS"
+	DOCTORAL_PDF_DIR       = "DOCTORAL_PDF_DIR"
+	DOCTORAL_BIB_DIR       = "DOCTORAL_BIB_DIR"
+	DOCTORAL_TEMPLATE_FILE = "DOCTORAL_TEMPLATE_FILE"
 )
 
 func GetDefaultPDFDir() string {
@@ -26,4 +27,8 @@ func GetDefaultSearchDirs() []string {
 	dirArray := strings.Split(dirs, ":")
 
 	return dirArray
+}
+
+func GetDefaultTemplateFile() string {
+	return os.Getenv(DOCTORAL_TEMPLATE_FILE)
 }

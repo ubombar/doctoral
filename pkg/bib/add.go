@@ -9,15 +9,18 @@ import (
 )
 
 var (
-	templateFile string
-	searchDirs   []string
-	copy         bool
-	bibtex       bool
-	interactive  bool
-	bibDir       string
-	pdfDir       string
-	pdfOnly      bool
-	noTemplate   bool
+	templateFile   string
+	searchDirs     []string
+	copy           bool
+	bibtex         bool
+	interactive    bool
+	bibDir         string
+	pdfDir         string
+	pdfOnly        bool
+	noTemplate     bool
+	forceOverwrite bool
+	tags           []string
+	status         string
 )
 
 var addCmd = &cobra.Command{
@@ -41,7 +44,7 @@ var addCmd = &cobra.Command{
 				var candidate string
 
 				if len(candidates) == 0 {
-					fmt.Printf("\tERROR: Cannot find any candidates for the given filename %q", identifier)
+					fmt.Printf("\tERROR: Cannot find any candidates for the given filename %q\n", identifier)
 					continue
 				} else if len(candidates) > 1 {
 					// if interacfive ask user which one to pick, you can use hashes of the pandoc of the pdfs
@@ -67,21 +70,24 @@ var addCmd = &cobra.Command{
 				destinationpath := doctoral.CalculateDestinationPath(candidate, pdfDir)
 
 				// Transfer pdf file to the new place
-				if err := doctoral.TransferFileContent(candidate, destinationpath, !copy); err != nil {
+				if err := doctoral.TransferFileContent(candidate, destinationpath, !copy, forceOverwrite); err != nil {
 					fmt.Printf("Cannot move/copy the file")
 				}
+
+				// Get the tags + default tags
+				allTags := append(doctoral.GetDefaultTags(), tags...)
 
 				// If we want to create the template after transfering the file.
 				if !noTemplate {
 					// Create the bib note from the given tempalte
-					if err := doctoral.CreateBibTemplate(templateFile, candidate, identifier); err != nil {
-						fmt.Printf("\tERROR: Cannot create the template file %q", err)
+					if err := doctoral.CreateBibTemplate(templateFile, bibDir, candidate, identifier, forceOverwrite, allTags, status); err != nil {
+						fmt.Printf("\tERROR: Cannot create the template file %q\n", err)
 						continue
 					}
 				}
 
 				// Done
-				fmt.Printf("\tAdded file to the Obsidian Vault")
+				fmt.Println("\tAdded file to the Obsidian Vault")
 
 			default:
 				fmt.Println("\tI have no idea what media type this is, skipping.")
@@ -94,7 +100,7 @@ var addCmd = &cobra.Command{
 
 func init() {
 	// Set the flags
-	addCmd.Flags().StringVar(&templateFile, "template", "", "Template file to be added as a Bib Note, add an empty one with just the same name of the material.")
+	addCmd.Flags().StringVar(&templateFile, "template", doctoral.GetDefaultTemplateFile(), "Template file to be added as a Bib Note, add an empty one with just the same name of the material.")
 	addCmd.Flags().StringArrayVar(&searchDirs, "search-dirs", doctoral.GetDefaultSearchDirs(), "Directories to look for material in the local machine.")
 	addCmd.Flags().BoolVar(&copy, "copy", false, "Copy the material in the search directory instead of move.")
 	addCmd.Flags().BoolVar(&bibtex, "bibtex", false, "Try to find or generate bibtext of the resource.")
@@ -103,4 +109,7 @@ func init() {
 	addCmd.Flags().StringVar(&pdfDir, "pdf-dir", doctoral.GetDefaultPDFDir(), "The location of the pdfs.")
 	addCmd.Flags().BoolVar(&pdfOnly, "pdf-only", true, "Only transfer pdf files.")
 	addCmd.Flags().BoolVar(&noTemplate, "no-template", false, "Only transfer the file, do not create a template.")
+	addCmd.Flags().BoolVar(&forceOverwrite, "force-overwrite", false, "Overwrite the bib not even if already exist.")
+	addCmd.Flags().StringArrayVar(&tags, "tags", []string{"#type/"}, "Tags that will be added.")
+	addCmd.Flags().StringVar(&status, "status", "#status/waiting", "Status of the bib file.")
 }
