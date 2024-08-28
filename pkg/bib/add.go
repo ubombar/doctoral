@@ -60,6 +60,8 @@ var addCmd = &cobra.Command{
 					candidate = candidates[0]
 				}
 
+				fmt.Printf("candidate: %v\n", candidate)
+
 				// Check if it is a pdf file
 				if pdfOnly && !doctoral.IsAPDFFile(candidate) {
 					fmt.Println("\tERROR: Given is not a pdf file, to allow all files use --pdf-only false flag.")

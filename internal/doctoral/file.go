@@ -70,6 +70,7 @@ func TransferFileContent(sourcePath, destPath string, deleteOriginal, overwrite 
 	defer inputFile.Close()
 
 	outputFile, err := os.Create(destPath)
+
 	if err != nil {
 		return fmt.Errorf("couldn't open dest file: %v", err)
 	}
