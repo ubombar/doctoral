@@ -131,7 +131,7 @@ func CreateBibTemplate(templateFile, bibDir, candidatePath, identifier string, o
 		Identifier: identifier,
 		Tags:       tags,
 		Status:     status,
-		Reference:  fmt.Sprintf("[[%s]]", filepath.Base(candidatePath)),
+		Reference:  fmt.Sprintf("[[%s]]", fmt.Sprintf("%s.png", identifier)),
 	})
 }
 

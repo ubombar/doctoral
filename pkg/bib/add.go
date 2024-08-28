@@ -71,7 +71,8 @@ var addCmd = &cobra.Command{
 
 				// Transfer pdf file to the new place
 				if err := doctoral.TransferFileContent(candidate, destinationpath, !copy, forceOverwrite); err != nil {
-					fmt.Printf("Cannot move/copy the file")
+					fmt.Printf("Cannot move/copy the file %q\n", err)
+					continue
 				}
 
 				// Get the tags + default tags
