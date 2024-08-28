@@ -15,7 +15,6 @@ type BibNote struct {
 	Identifier string
 	Tags       []string
 	Status     string
-	Reference  string
 }
 
 // Searches the given file on the search dirs, returns candidates.
@@ -131,7 +130,6 @@ func CreateBibTemplate(templateFile, bibDir, candidatePath, identifier string, o
 		Identifier: identifier,
 		Tags:       tags,
 		Status:     status,
-		Reference:  fmt.Sprintf("[[%s]]", fmt.Sprintf("%s.png", identifier)),
 	})
 }
 

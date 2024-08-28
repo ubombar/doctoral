@@ -111,6 +111,6 @@ func init() {
 	addCmd.Flags().BoolVar(&pdfOnly, "pdf-only", true, "Only transfer pdf files.")
 	addCmd.Flags().BoolVar(&noTemplate, "no-template", false, "Only transfer the file, do not create a template.")
 	addCmd.Flags().BoolVar(&forceOverwrite, "force-overwrite", false, "Overwrite the bib not even if already exist.")
-	addCmd.Flags().StringArrayVar(&tags, "tags", []string{"#type/"}, "Tags that will be added.")
+	addCmd.Flags().StringArrayVar(&tags, "tags", []string{"#topic/"}, "Tags that will be added.")
 	addCmd.Flags().StringVar(&status, "status", "#status/waiting", "Status of the bib file.")
 }
