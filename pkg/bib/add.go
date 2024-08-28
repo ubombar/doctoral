@@ -3,7 +3,6 @@ package bib
 import (
 	"fmt"
 	"os"
-	"regexp"
 
 	"github.com/spf13/cobra"
 	"github.com/ubombar/doctoral/internal/doctoral"
@@ -15,6 +14,10 @@ var (
 	copy         bool
 	bibtex       bool
 	interactive  bool
+	bibDir       string
+	pdfDir       string
+	pdfOnly      bool
+	noTemplate   bool
 )
 
 var addCmd = &cobra.Command{
@@ -31,22 +34,57 @@ var addCmd = &cobra.Command{
 
 			itype := doctoral.GetTypeOfIdentifier(identifier)
 
-			if itype == doctoral.UNKNOWN {
-				fmt.Println("Unknown identifier specified, skipping.")
-				continue
-			} else if itype == doctoral.PDF {
-				// Do PDF matching
-				re, err := regexp.Compile(fmt.Sprintf("(.*%s.*)|(.*%s\\.(?i)(pdf))", identifier, identifier))
+			switch itype {
+			case doctoral.FILE:
+				fmt.Println("\tDetected a file, copying contents and adding it to the Obsidian Box")
+				candidates := doctoral.FindRequestedFile(identifier, searchDirs)
+				var candidate string
 
-				if err != nil {
-					fmt.Printf("Cannot create a searching regex for %s. Skipping\n", identifier)
+				if len(candidates) == 0 {
+					fmt.Printf("\tERROR: Cannot find any candidates for the given filename %q", identifier)
+					continue
+				} else if len(candidates) > 1 {
+					// if interacfive ask user which one to pick, you can use hashes of the pandoc of the pdfs
+					// so you can reduce the number of selections.
+					if interactive {
+						// TODO stuff
+					} else {
+						// pick the first one
+						candidate = candidates[0]
+					}
+				} else {
+					// Get the element
+					candidate = candidates[0]
+				}
+
+				// Check if it is a pdf file
+				if pdfOnly && !doctoral.IsAPDFFile(candidate) {
+					fmt.Println("\tERROR: Given is not a pdf file, to allow all files use --pdf-only false flag.")
 					continue
 				}
 
-				testDir := "/home/ubombar/Downloads/Strategies for Sound Internet Measurement.PDF"
+				// Calcualte the destination path in the pdf dir
+				destinationpath := doctoral.CalculateDestinationPath(candidate, pdfDir)
 
-				fmt.Printf("re.Match([]byte(testDir)): %v\n", re.Match([]byte(testDir)))
-				// Then get the finding directories, search for matched cases.
+				// Transfer pdf file to the new place
+				if err := doctoral.TransferFileContent(candidate, destinationpath, !copy); err != nil {
+					fmt.Printf("Cannot move/copy the file")
+				}
+
+				// If we want to create the template after transfering the file.
+				if !noTemplate {
+					// Create the bib note from the given tempalte
+					if err := doctoral.CreateBibTemplate(templateFile, candidate, identifier); err != nil {
+						fmt.Printf("\tERROR: Cannot create the template file %q", err)
+						continue
+					}
+				}
+
+				// Done
+				fmt.Printf("\tAdded file to the Obsidian Vault")
+
+			default:
+				fmt.Println("\tI have no idea what media type this is, skipping.")
 			}
 
 		}
@@ -57,8 +95,12 @@ var addCmd = &cobra.Command{
 func init() {
 	// Set the flags
 	addCmd.Flags().StringVar(&templateFile, "template", "", "Template file to be added as a Bib Note, add an empty one with just the same name of the material.")
-	addCmd.Flags().StringArrayVar(&searchDirs, "search-dirs", []string{}, "Directories to look for material in the local machine.")
+	addCmd.Flags().StringArrayVar(&searchDirs, "search-dirs", doctoral.GetDefaultSearchDirs(), "Directories to look for material in the local machine.")
 	addCmd.Flags().BoolVar(&copy, "copy", false, "Copy the material in the search directory instead of move.")
 	addCmd.Flags().BoolVar(&bibtex, "bibtex", false, "Try to find or generate bibtext of the resource.")
 	addCmd.Flags().BoolVar(&interactive, "interactive", true, "Promt user in cases like multiple files.")
+	addCmd.Flags().StringVar(&bibDir, "bib-dir", doctoral.GetDefaultBibDir(), "The location of the bib notes.")
+	addCmd.Flags().StringVar(&pdfDir, "pdf-dir", doctoral.GetDefaultPDFDir(), "The location of the pdfs.")
+	addCmd.Flags().BoolVar(&pdfOnly, "pdf-only", true, "Only transfer pdf files.")
+	addCmd.Flags().BoolVar(&noTemplate, "no-template", false, "Only transfer the file, do not create a template.")
 }
