@@ -3,6 +3,8 @@ package bib
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/ubombar/doctoral/internal/doctoral"
@@ -51,14 +53,42 @@ var addCmd = &cobra.Command{
 					// so you can reduce the number of selections.
 					if interactive {
 						// TODO stuff
+						for true {
+							for i, candidate := range candidates {
+								fmt.Printf("\t\t[%d]: %v\n", i, candidate)
+							}
+							fmt.Println("Type the index for selecting the document [q] to exit.")
+							input := ""
+							fmt.Scanln(&input)
+
+							if strings.Contains(strings.ToLower(input), "q") {
+								break
+							}
+
+							index, err := strconv.Atoi(input)
+
+							if err != nil {
+								continue
+							}
+
+							if index < 0 || index >= len(candidates) {
+								continue
+							}
+
+							candidate = candidates[index]
+							break
+						}
 					} else {
 						// pick the first one
-						candidate = candidates[0]
+						fmt.Println("There are multiple files found, please enable interactive mode by --interactive")
+						continue
 					}
 				} else {
 					// Get the element
 					candidate = candidates[0]
 				}
+
+				// fmt.Printf("candidate: %v\n", candidate)
 
 				// Check if it is a pdf file
 				if pdfOnly && !doctoral.IsAPDFFile(candidate) {

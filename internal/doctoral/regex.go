@@ -1,7 +1,6 @@
 package doctoral
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -63,12 +62,4 @@ func match(regexString string, identifierBytes []byte) bool {
 		return true
 	}
 	return false
-}
-
-// Creates a regex from the string while sanitizing it. Soft means there can be other characters behind
-// and after the string.
-// NOT Implemented the sanitization part actually :)
-// Add case insensitivity and removal of special characters.
-func SanitizedSoftCompile(name string) (*regexp.Regexp, error) {
-	return regexp.Compile(fmt.Sprintf(".*%s", name))
 }

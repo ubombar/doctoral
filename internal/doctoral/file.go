@@ -36,25 +36,27 @@ func FindRequestedFile(identifier string, searchDirs []string) []string {
 					continue
 				}
 
+				// fmt.Printf("%q %q\n", directory, entry.Name())
+
 				// Filter out the ones doesn't the name.
-				re, err := SanitizedSoftCompile(entry.Name())
-
-				// If there is a problem with regex creation, filter it out
-				if err != nil {
+				// Instead of using a RegEx just check for substring.
+				if !strings.Contains(entry.Name(), identifier) {
+					// fmt.Printf("%q does not contain %q\n", entry.Name(), identifier)
 					continue
 				}
 
-				// If not matched filter it out
-				if !re.Match([]byte(entry.Name())) {
-					continue
-				}
+				fmt.Printf("%q does contain %q\n", entry.Name(), identifier)
 
-				absolutePathCandidates = append(absolutePathCandidates, filepath.Join(directory, entry.Name()))
+				candidatePathString := filepath.Join(directory, entry.Name())
+				// fmt.Printf("candidatePathString: %v\n", candidatePathString)
+				absolutePathCandidates = append(absolutePathCandidates, candidatePathString)
 			}
 		} else {
 			fmt.Printf("WARNING: cannot read from one of the search directories %q\n", directory)
 		}
 	}
+
+	fmt.Printf("absolutePathCandidates: %v\n", absolutePathCandidates)
 
 	return absolutePathCandidates
 }
