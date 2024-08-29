@@ -53,11 +53,11 @@ var addCmd = &cobra.Command{
 					// so you can reduce the number of selections.
 					if interactive {
 						// TODO stuff
-						for true {
+						for {
 							for i, candidate := range candidates {
 								fmt.Printf("\t\t[%d]: %v\n", i, candidate)
 							}
-							fmt.Println("Type the index for selecting the document [q] to exit.")
+							fmt.Println("\t\tType the index for selecting the document [q] to exit.")
 							input := ""
 							fmt.Scanln(&input)
 

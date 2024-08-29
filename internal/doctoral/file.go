@@ -45,7 +45,7 @@ func FindRequestedFile(identifier string, searchDirs []string) []string {
 					continue
 				}
 
-				fmt.Printf("%q does contain %q\n", entry.Name(), identifier)
+				// fmt.Printf("%q does contain %q\n", entry.Name(), identifier)
 
 				candidatePathString := filepath.Join(directory, entry.Name())
 				// fmt.Printf("candidatePathString: %v\n", candidatePathString)
@@ -55,8 +55,6 @@ func FindRequestedFile(identifier string, searchDirs []string) []string {
 			fmt.Printf("WARNING: cannot read from one of the search directories %q\n", directory)
 		}
 	}
-
-	fmt.Printf("absolutePathCandidates: %v\n", absolutePathCandidates)
 
 	return absolutePathCandidates
 }
