@@ -34,7 +34,9 @@ var addCmd = &cobra.Command{
 			fmt.Println("Waiting for at least one material name/url")
 			os.Exit(-1)
 		}
+	LL:
 		for _, identifier := range args {
+
 			fmt.Printf("Trying for %q\n", identifier)
 
 			itype := doctoral.GetTypeOfIdentifier(identifier)
@@ -53,7 +55,6 @@ var addCmd = &cobra.Command{
 					// so you can reduce the number of selections.
 					if interactive {
 						// TODO stuff
-					LL:
 						for {
 							for i, candidate := range candidates {
 								fmt.Printf("\t\t[%d]: %v\n", i, candidate)
