@@ -53,6 +53,7 @@ var addCmd = &cobra.Command{
 					// so you can reduce the number of selections.
 					if interactive {
 						// TODO stuff
+					LL:
 						for {
 							for i, candidate := range candidates {
 								fmt.Printf("\t\t[%d]: %v\n", i, candidate)
@@ -68,7 +69,7 @@ var addCmd = &cobra.Command{
 							index, err := strconv.Atoi(input)
 
 							if err != nil {
-								continue
+								break LL
 							}
 
 							if index < 0 || index >= len(candidates) {
