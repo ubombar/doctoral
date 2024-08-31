@@ -19,6 +19,7 @@ type BibNoteTemplateData struct {
 	MaterialFileNameWithoutExtension string
 	MaterialFileName                 string
 	Status                           string
+	EmbeddedMedia                    bool
 }
 
 type Document struct {
@@ -198,7 +199,26 @@ func NewTemplateData(config *Config, bibNote *Document, material *Document) BibN
 		Tags:                             config.DefaultTags, // TODO: Just add default tags for now.
 		Date:                             time.Now().Format("02-01-2006"),
 		MaterialFileNameWithoutExtension: bibNote.FileNameWithoutExt(),
-		MaterialFileName:                 material.FileName,
+		MaterialFileName:                 material.FileName, // adds pdf
 		Status:                           config.DefaultStatus,
+		EmbeddedMedia:                    false,
+	}
+}
+
+func NewTemplateDataMediaString(config *Config, bibNote *Document, mediaString string) BibNoteTemplateData {
+	embeddingSymbol := ""
+
+	if config.EmbedMedia {
+		embeddingSymbol = "!"
+	}
+
+	return BibNoteTemplateData{
+		EmbeddingSymbol:                  embeddingSymbol,
+		Tags:                             config.DefaultTags, // TODO: Just add default tags for now.
+		Date:                             time.Now().Format("02-01-2006"),
+		MaterialFileNameWithoutExtension: bibNote.FileNameWithoutExt(),
+		MaterialFileName:                 mediaString,
+		Status:                           config.DefaultStatus,
+		EmbeddedMedia:                    true,
 	}
 }

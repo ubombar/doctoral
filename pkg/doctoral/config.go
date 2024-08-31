@@ -57,6 +57,9 @@ type Config struct {
 	// Put a ! symbol in the begining of the PDFs are embedded instead of linked
 	EmbedPDFs bool `yaml:"embedPDFs"`
 
+	// Put a ! symbol in the begining of the PDFs are embedded instead of linked
+	EmbedMedia bool `yaml:"embedMedia"`
+
 	// Default tags to append the given tags by the command line flags
 	DefaultTags []string `yaml:"defaultTags"`
 
@@ -77,6 +80,7 @@ func NewConfigWithDefaultValues() *Config {
 		OverwriteBibNoteFiles:  false,
 		DeleteAfterCopyingPDFs: true,
 		EmbedPDFs:              false,
+		EmbedMedia:             true,
 		DefaultTags:            []string{"#type/bibnote", "#topic/"},
 		DefaultStatus:          "#status/waiting",
 		DefaultSearchRegex:     ".*\\.pdf",

@@ -4,6 +4,7 @@ Copyright © 2024 Ufuk BOMBAR <ufukbombar@gmail.com>
 package cmd
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -40,6 +41,13 @@ var rootCmd = &cobra.Command{
 			}
 		}
 
+		// Create the bib note file as well. It is a .md file
+		template, err := doctoral.NewDocument(config.TemplateFile)
+		if err != nil {
+			fmt.Printf("\tCannot find template file %q: %s\n", config.TemplateFile, err)
+			return
+		}
+
 		// If it is run with no arguments, run in interactive mode.
 		if len(args) == 0 {
 			// Get the documents under search dirs
@@ -47,13 +55,6 @@ var rootCmd = &cobra.Command{
 
 			if err != nil {
 				fmt.Printf("Cannot list the files under search directories: %s\n", err)
-				return
-			}
-
-			// Create the bib note file as well. It is a .md file
-			template, err := doctoral.NewDocument(config.TemplateFile)
-			if err != nil {
-				fmt.Printf("\tCannot find template file %q: %s\n", config.TemplateFile, err)
 				return
 			}
 
@@ -111,7 +112,30 @@ var rootCmd = &cobra.Command{
 				}
 			}
 		} else { // Run in non-interactive modem just get the pdf/blog/article etc.
-			fmt.Println("Running in non-interactive mode is not supported yet.")
+			for i, mediaString := range args {
+				// Get the media string's hash to generatee a pseudo random filename
+				bibNoteName := fmt.Sprintf("%x", sha256.Sum256([]byte(mediaString)))
+
+				// Then create the Document object
+				bibNote, err := doctoral.NewDocument(filepath.Join(config.BibNotesDirectory, fmt.Sprint(bibNoteName, ".md")))
+				if err != nil {
+					continue
+				}
+
+				// Check if it exists
+				if !config.OverwriteBibNoteFiles && bibNote.ExistOnDisk() {
+					fmt.Println("\tCannot create bib note because it already exists and 'overwriteBibNoteFiles' is set to false")
+					continue
+				}
+
+				// Then create the bib from template file
+				if err := bibNote.TemplateContent(*template, doctoral.NewTemplateDataMediaString(config, bibNote, mediaString)); err != nil {
+					fmt.Printf("\tCannot create bib file %q: %s\n", bibNote.FileName, err)
+					continue
+				}
+
+				fmt.Printf("* (%d/%d): Created template for media %q\n", i+1, len(args), mediaString)
+			}
 		}
 	},
 }
