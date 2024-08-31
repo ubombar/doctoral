@@ -5,12 +5,11 @@ import (
 	"log"
 
 	"github.com/pkg/term"
-	"github.com/ubombar/doctoral/pkg/doctoral"
 )
 
 type Menu interface {
 	// Asks use which of the files they want to choose. Returns the selected ones.
-	GetChoices([]doctoral.Document) []doctoral.Document
+	GetChoices(options []Document) []Document
 }
 
 const (
@@ -30,7 +29,7 @@ func NewSimpleMenu() Menu {
 }
 
 // Prompts user for a list of files to pick.
-func (m *simpleMenu) GetChoices(options []doctoral.Document) []doctoral.Document {
+func (m *simpleMenu) GetChoices(options []Document) []Document {
 	exit := false
 	cursor := 0
 	selectedIndicies := map[int]bool{}
@@ -39,6 +38,13 @@ func (m *simpleMenu) GetChoices(options []doctoral.Document) []doctoral.Document
 	for !exit {
 		m.clearTerminal()
 		fmt.Println("UP/DOWN arrows to move, SPACE to select, ENTER to end, Q to quit.")
+
+		// Check if there are no available options to select, exit with an empty list
+		if len(options) == 0 {
+			fmt.Println("\tThere is noting to display")
+			return []Document{}
+		}
+
 		for i, option := range options {
 			optString := m.stringifyOption(i, &option, selectedIndicies[i], cursor == i)
 			fmt.Printf("\t%v\n", optString)
@@ -54,12 +60,12 @@ func (m *simpleMenu) GetChoices(options []doctoral.Document) []doctoral.Document
 		case KEY_SPACE:
 			selectedIndicies[cursor] = !selectedIndicies[cursor] // Toggle
 		case KEY_Q:
-			return []doctoral.Document{} // Return empty list
+			return []Document{} // Return empty list
 		case KEY_RETURN:
 			exit = true
 		}
 	}
-	selectedOptions := make([]doctoral.Document, 0)
+	selectedOptions := make([]Document, 0)
 
 	for index, selected := range selectedIndicies {
 		if selected {
@@ -74,7 +80,7 @@ func (m simpleMenu) clearTerminal() {
 	fmt.Print("\033[H\033[2J")
 }
 
-func (m *simpleMenu) stringifyOption(index int, opt *doctoral.Document, selected, cursor bool) string {
+func (m *simpleMenu) stringifyOption(index int, opt *Document, selected, cursor bool) string {
 	cursorString := " "
 	selectedString := " "
 

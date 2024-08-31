@@ -50,16 +50,32 @@ type Config struct {
 
 	// Will the Bib Note file be overwritten if it already exist
 	OverwriteBibNoteFiles bool `yaml:"overwriteBibNoteFiles"`
+
+	// Deletes the original pdf file after copying it to the PDF directory
+	DeleteAfterCopyingPDFs bool `yaml:"deleteAfterCopyingPDFs"`
+
+	// Put a ! symbol in the begining of the PDFs are embedded instead of linked
+	EmbedPDFs bool `yaml:"embedPDFs"`
+
+	// Default tags to append the given tags by the command line flags
+	DefaultTags []string `yaml:"defaultTags"`
+
+	// Default status
+	DefaultStatus string `yaml:"defaultStatus"`
 }
 
 func NewConfigWithDefaultValues() *Config {
 	return &Config{
-		TemplateFile:          "~/Documents/Template", // possibly doesn't exist
-		SearchDirectories:     []string{},
-		BibNotesDirectory:     "~/Documents",
-		PDFDirectory:          "~/Documents",
-		OverwritePDFFiles:     false,
-		OverwriteBibNoteFiles: false,
+		TemplateFile:           "~/Documents/template.md", // possibly doesn't exist
+		SearchDirectories:      []string{},
+		BibNotesDirectory:      "~/Documents",
+		PDFDirectory:           "~/Documents",
+		OverwritePDFFiles:      false,
+		OverwriteBibNoteFiles:  false,
+		DeleteAfterCopyingPDFs: true,
+		EmbedPDFs:              false,
+		DefaultTags:            []string{"#type/bibnote", "#topic/"},
+		DefaultStatus:          "#status/waiting",
 	}
 }
 
