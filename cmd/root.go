@@ -57,11 +57,9 @@ var rootCmd = &cobra.Command{
 				return
 			}
 
-			// menu := doctoral.NewSimpleMenu()
-			// choices := menu.GetChoices(documents)
-			choices := []doctoral.Document{
-				documents[2],
-			}
+			// Create a simple menu and get the choices from user
+			menu := doctoral.NewSimpleMenu()
+			choices := menu.GetChoices(documents)
 
 			for i, choice := range choices {
 				// Create a document pointing to the new location.
