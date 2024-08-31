@@ -57,9 +57,11 @@ var rootCmd = &cobra.Command{
 				return
 			}
 
-			menu := doctoral.NewSimpleMenu()
-
-			choices := menu.GetChoices(documents)
+			// menu := doctoral.NewSimpleMenu()
+			// choices := menu.GetChoices(documents)
+			choices := []doctoral.Document{
+				documents[2],
+			}
 
 			for i, choice := range choices {
 				// Create a document pointing to the new location.
@@ -88,14 +90,15 @@ var rootCmd = &cobra.Command{
 					continue
 				}
 
-				if err := choice.CopyToFile(choiceCopy.AbsolutePath); err != nil {
-					fmt.Printf("\tCannot copy material file %q: %s\n", choiceCopy.FileName, err)
+				// Then create the bib from template file
+				if err := bibNote.TemplateContent(*template, doctoral.NewTemplateData(config, bibNote, choiceCopy)); err != nil {
+					fmt.Printf("\tCannot create bib file %q: %s\n", bibNote.FileName, err)
 					continue
 				}
 
-				// Then create the bib from template file
-				if err := bibNote.TemplateContent(*template, doctoral.NewTemplateData(config, bibNote)); err != nil {
-					fmt.Printf("\tCannot create bib file %q: %s\n", bibNote.FileName, err)
+				if err := choice.CopyToFile(choiceCopy.AbsolutePath); err != nil {
+					fmt.Printf("\tCannot copy material file %q: %s\n", choiceCopy.FileName, err)
+					continue
 				}
 
 				if config.DeleteAfterCopyingPDFs {

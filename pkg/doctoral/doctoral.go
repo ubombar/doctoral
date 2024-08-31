@@ -146,12 +146,13 @@ func (d Document) Delete() error {
 }
 
 func (d Document) FileNameWithoutExt() string {
-	return strings.TrimSuffix(d.Extension, d.FileName)
+	s := strings.TrimSuffix(d.FileName, d.Extension)
+	return s
 }
 
 // From the template and TemplateScheme, put the contents inside the file
 func (d Document) TemplateContent(templateDocument Document, templateData BibNoteTemplateData) error {
-	templateFileContent, err := os.ReadFile(d.AbsolutePath)
+	templateFileContent, err := os.ReadFile(templateDocument.AbsolutePath)
 	if err != nil {
 		return err
 	}
@@ -177,7 +178,7 @@ func (d Document) TemplateContent(templateDocument Document, templateData BibNot
 	return nil
 }
 
-func NewTemplateData(config *Config, bibNote *Document) BibNoteTemplateData {
+func NewTemplateData(config *Config, bibNote *Document, material *Document) BibNoteTemplateData {
 	embeddingSymbol := ""
 
 	if config.EmbedPDFs {
@@ -188,7 +189,7 @@ func NewTemplateData(config *Config, bibNote *Document) BibNoteTemplateData {
 		Tags:                             config.DefaultTags, // TODO: Just add default tags for now.
 		Date:                             time.Now().Format("02-01-2006"),
 		MaterialFileNameWithoutExtension: bibNote.FileNameWithoutExt(),
-		MaterialFileName:                 bibNote.FileName,
+		MaterialFileName:                 material.FileName,
 		Status:                           config.DefaultStatus,
 	}
 }
