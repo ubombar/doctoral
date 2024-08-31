@@ -97,7 +97,7 @@ func NewDocumentWithoutError(path string) *Document {
 
 func (d Document) ExistOnDisk() bool {
 	_, err := os.Stat(d.AbsolutePath)
-	return errors.Is(err, os.ErrNotExist)
+	return !errors.Is(err, os.ErrNotExist)
 }
 
 func (d Document) ParentDirectoryAbsPAth() string {
