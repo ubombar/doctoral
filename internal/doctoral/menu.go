@@ -37,6 +37,7 @@ func (m *simpleMenu) GetChoices(options []doctoral.Document) []doctoral.Document
 
 	// The main loop
 	for !exit {
+		m.clearTerminal()
 		fmt.Println("UP/DOWN arrows to move, SPACE to select, ENTER to end, Q to quit.")
 		for i, option := range options {
 			optString := m.stringifyOption(i, &option, selectedIndicies[i], cursor == i)
@@ -69,6 +70,10 @@ func (m *simpleMenu) GetChoices(options []doctoral.Document) []doctoral.Document
 	return selectedOptions
 }
 
+func (m simpleMenu) clearTerminal() {
+	fmt.Print("\033[H\033[2J")
+}
+
 func (m *simpleMenu) stringifyOption(index int, opt *doctoral.Document, selected, cursor bool) string {
 	cursorString := " "
 	selectedString := " "
@@ -97,9 +102,6 @@ func (m *simpleMenu) getInput() string {
 	if err != nil {
 		return ""
 	}
-
-	// Clears the screen
-	fmt.Print("\033[H\033[2J")
 
 	t.Restore()
 	t.Close()
