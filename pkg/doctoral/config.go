@@ -62,6 +62,9 @@ type Config struct {
 
 	// Default status
 	DefaultStatus string `yaml:"defaultStatus"`
+
+	// The search regex
+	DefaultSearchRegex string `yaml:"defaultSearchRegex"`
 }
 
 func NewConfigWithDefaultValues() *Config {
@@ -76,6 +79,7 @@ func NewConfigWithDefaultValues() *Config {
 		EmbedPDFs:              false,
 		DefaultTags:            []string{"#type/bibnote", "#topic/"},
 		DefaultStatus:          "#status/waiting",
+		DefaultSearchRegex:     ".*\\.pdf",
 	}
 }
 

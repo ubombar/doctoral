@@ -43,7 +43,7 @@ var rootCmd = &cobra.Command{
 		// If it is run with no arguments, run in interactive mode.
 		if len(args) == 0 {
 			// Get the documents under search dirs
-			documents, err := doctoral.GetDocumentsUnderDirectories(config.SearchDirectories)
+			documents, err := doctoral.GetDocumentsUnderDirectories(config.SearchDirectories, config.DefaultSearchRegex)
 
 			if err != nil {
 				fmt.Printf("Cannot list the files under search directories: %s\n", err)
@@ -105,9 +105,9 @@ var rootCmd = &cobra.Command{
 						fmt.Printf("\tCannot remove old file %q: %s\n", choice.FileName, err)
 						continue
 					}
-					fmt.Printf("\t(%d/%d): Moved material file and created template for %q\n", i, len(choices), choiceCopy.FileNameWithoutExt())
+					fmt.Printf("* (%d/%d): Moved material file and created template for %q\n", i+1, len(choices), choiceCopy.FileNameWithoutExt())
 				} else {
-					fmt.Printf("\t(%d/%d): Copied material file and created template for %q\n", i, len(choices), choiceCopy.FileNameWithoutExt())
+					fmt.Printf("* (%d/%d): Copied material file and created template for %q\n", i+1, len(choices), choiceCopy.FileNameWithoutExt())
 				}
 			}
 		} else { // Run in non-interactive modem just get the pdf/blog/article etc.

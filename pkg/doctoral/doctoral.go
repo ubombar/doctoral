@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -55,7 +56,11 @@ func GetDocumentsUnderDirectory(directory string) ([]Document, error) {
 	return documents, nil
 }
 
-func GetDocumentsUnderDirectories(directories []string) ([]Document, error) {
+func GetDocumentsUnderDirectories(directories []string, searchRegex string) ([]Document, error) {
+	re, err := regexp.Compile(searchRegex)
+	if err != nil {
+		return []Document{}, err
+	}
 	docs := []Document{}
 
 	for _, directory := range directories {
@@ -65,7 +70,11 @@ func GetDocumentsUnderDirectories(directories []string) ([]Document, error) {
 			return []Document{}, err
 		}
 
-		docs = append(docs, batch...)
+		for _, e := range batch {
+			if re.Match([]byte(e.AbsolutePath)) {
+				docs = append(docs, e)
+			}
+		}
 	}
 
 	return docs, nil
